@@ -1,6 +1,5 @@
 from itertools import count
 
-temp_counter = count()
 # Grammar Productions
 productions = [
     ["P'", 'P'],
@@ -16,133 +15,182 @@ productions = [
     ['T', 'T', '/', 'F'],
     ['T', 'F'],
     ['F', '(', 'E', ')'],
-    ['F', 'id']
+    ['F', 'id'],
+    ['B', 'B', '||', 'M', 'C'],
+    ['B', 'C'],
+    ['C', 'C', '&&', 'M', 'D'],
+    ['C', 'D'],
+    ['D', '!', 'G'],
+    ['D', 'G'],
+    ['G', 'id'],
+    ['G', 'id', "relop", 'id']
 ]
 
 # Bottom-Up Parser Table
-action_table={
-    (0,"while"):"s4",
-    (0,"id"):"s5",
-    (1,"$"):"acc",
-    (2,"$"):"r1",
-    (3,"$"):"r2",
-    (4,"while"):"r4",
-    (4,"id"):"r4",
-    (4,"("):"r4",
-    (5,"="):"s7",
-    (6,"id"):"s12",
-    (6,"("):"s11",
-    (7,"id"):"s12",
-    (7,"("):"s11",
-    (8,"do"):"s14",
-    (8,"+"):"s15",
-    (8,"-"):"s16",
-    (9,"do"):"r8",
-    (9,"+"):"r8",
-    (9,"-"):"r8",
-    (9,"*"):"s17",
-    (9,"/"):"s18",
-    (9,")"):"r8",
-    (9,"$"):"r8",
-    (10,"do"):"r11",
-    (10,"+"):"r11",
-    (10,"-"):"r11",
-    (10,"*"):"r11",
-    (10,"/"):"r11",
-    (10,")"):"r11",
-    (10,"$"):"r11",
-    (11,"id"):"s12",
-    (11,"("):"s11",
-    (12,"do"):"r13",
-    (12,"+"):"r13",
-    (12,"-"):"r13",
-    (12,"*"):"r13",
-    (12,"/"):"r13",
-    (12,")"):"r13",
-    (12,"$"):"r13",
-    (13,"+"):"s15",
-    (13,"-"):"s16",
-    (13,"$"):"r5",
-    (14,"while"):"r4",
-    (14,"id"):"r4",
-    (14,"("):"r4",
-    (15,"id"):"s12",
-    (15,"("):"s11",
-    (16,"id"):"s12",
-    (16,"("):"s11",
-    (17,"id"):"s12",
-    (17,"("):"s11",
-    (18,"id"):"s12",
-    (18,"("):"s11",
-    (19,"+"):"s15",
-    (19,"-"):"s16",
-    (19,")"):"s25",
-    (20,"while"):"s4",
-    (20,"id"):"s5",
-    (21,"do"):"r6",
-    (21,"+"):"r6",
-    (21,"-"):"r6",
-    (21,"*"):"s17",
-    (21,"/"):"s18",
-    (21,")"):"r6",
-    (21,"$"):"r6",
-    (22,"do"):"r7",
-    (22,"+"):"r7",
-    (22,"-"):"r7",
-    (22,"*"):"s17",
-    (22,"/"):"s18",
-    (22,")"):"r7",
-    (22,"$"):"r7",
-    (23,"do"):"r9",
-    (23,"+"):"r9",
-    (23,"-"):"r9",
-    (23,"*"):"r9",
-    (23,"/"):"r9",
-    (23,")"):"r9",
-    (23,"$"):"r9",
-    (24,"do"):"r10",
-    (24,"+"):"r10",
-    (24,"-"):"r10",
-    (24,"*"):"r10",
-    (24,"/"):"r10",
-    (24,")"):"r10",
-    (24,"$"):"r10",
-    (25,"do"):"r12",
-    (25,"+"):"r12",
-    (25,"-"):"r12",
-    (25,"*"):"r12",
-    (25,"/"):"r12",
-    (25,")"):"r12",
-    (25,"$"):"r12",
-    (26,"$"):"r3",
+action_table= {
+    (0, 'id'): 's5',
+    (0, 'while'): 's4',
+    (1, '$'): 'acc',
+    (2, '$'): 'r1',
+    (3, '$'): 'r2',
+    (4, 'id'): 'r4',
+    (4, '!'): 'r4',
+    (4, 'while'): 'r4',
+    (5, '='): 's7',
+    (6, 'id'): 's13',
+    (6, '!'): 's11',
+    (7, '('): 's17',
+    (7, 'id'): 's18',
+    (8, 'do'): 's19',
+    (8, '||'): 's20',
+    (9, '&&'): 's21',
+    (9, 'do'): 'r15',
+    (9, '||'): 'r15',
+    (10, '&&'): 'r17',
+    (10, 'do'): 'r17',
+    (10, '||'): 'r17',
+    (11, 'id'): 's13',
+    (12, '&&'): 'r19',
+    (12, 'do'): 'r19',
+    (12, '||'): 'r19',
+    (13, '&&'): 'r20',
+    (13, 'do'): 'r20',
+    (13, '||'): 'r20',
+    (13, 'relop'): 's23',
+    (14, '$'): 'r5',
+    (14, '+'): 's24',
+    (14, '-'): 's25',
+    (15, '$'): 'r8',
+    (15, ')'): 'r8',
+    (15, '*'): 's26',
+    (15, '+'): 'r8',
+    (15, '-'): 'r8',
+    (15, '/'): 's27',
+    (16, '$'): 'r11',
+    (16, ')'): 'r11',
+    (16, '*'): 'r11',
+    (16, '+'): 'r11',
+    (16, '-'): 'r11',
+    (16, '/'): 'r11',
+    (17, '('): 's17',
+    (17, 'id'): 's18',
+    (18, '$'): 'r13',
+    (18, ')'): 'r13',
+    (18, '*'): 'r13',
+    (18, '+'): 'r13',
+    (18, '-'): 'r13',
+    (18, '/'): 'r13',
+    (19, 'id'): 'r4',
+    (19, '!'): 'r4',
+    (19, 'while'): 'r4',
+    (20, 'id'): 'r4',
+    (20, '!'): 'r4',
+    (20, 'while'): 'r4',
+    (21, 'id'): 'r4',
+    (21, '!'): 'r4',
+    (21, 'while'): 'r4',
+    (22, '&&'): 'r18',
+    (22, 'do'): 'r18',
+    (22, '||'): 'r18',
+    (23, 'id'): 's32',
+    (24, '('): 's17',
+    (24, 'id'): 's18',
+    (25, '('): 's17',
+    (25, 'id'): 's18',
+    (26, '('): 's17',
+    (26, 'id'): 's18',
+    (27, '('): 's17',
+    (27, 'id'): 's18',
+    (28, ')'): 's37',
+    (28, '+'): 's24',
+    (28, '-'): 's25',
+    (29, 'id'): 's5',
+    (29, 'while'): 's4',
+    (30, 'id'): 's13',
+    (30, '!'): 's11',
+    (31, 'id'): 's13',
+    (31, '!'): 's11',
+    (32, '&&'): 'r21',
+    (32, 'do'): 'r21',
+    (32, '||'): 'r21',
+    (33, '$'): 'r6',
+    (33, ')'): 'r6',
+    (33, '*'): 's26',
+    (33, '+'): 'r6',
+    (33, '-'): 'r6',
+    (33, '/'): 's27',
+    (34, '$'): 'r7',
+    (34, ')'): 'r7',
+    (34, '*'): 's26',
+    (34, '+'): 'r7',
+    (34, '-'): 'r7',
+    (34, '/'): 's27',
+    (35, '$'): 'r9',
+    (35, ')'): 'r9',
+    (35, '*'): 'r9',
+    (35, '+'): 'r9',
+    (35, '-'): 'r9',
+    (35, '/'): 'r9',
+    (36, '$'): 'r10',
+    (36, ')'): 'r10',
+    (36, '*'): 'r10',
+    (36, '+'): 'r10',
+    (36, '-'): 'r10',
+    (36, '/'): 'r10',
+    (37, '$'): 'r12',
+    (37, ')'): 'r12',
+    (37, '*'): 'r12',
+    (37, '+'): 'r12',
+    (37, '-'): 'r12',
+    (37, '/'): 'r12',
+    (38, '$'): 'r3',
+    (39, '&&'): 's21',
+    (39, 'do'): 'r14',
+    (39, '||'): 'r14',
+    (40, '&&'): 'r16',
+    (40, 'do'): 'r16',
+    (40, '||'): 'r16'
 }
 
 goto_table = {
-    (0,"P") : 1,
-    (0,"S") : 2,
-    (0,"A") : 3,
-    (4,"M") : 6,
-    (6,"E") : 8,
-    (6,"T") : 9,
-    (6,"F") : 10,
-    (7,"E") : 13,
-    (7,"T") : 9,
-    (7,"F") : 10,
-    (11,"E") :19,
-    (11,"T") :9,
-    (11,"F") : 10,
-    (14,"M") : 20,
-    (15,"T"): 21,
-    (15,"F"): 10,
-    (16,"T"): 22,
-    (16,"F"): 10,
-    (17,"F"): 23,
-    (18,"F"): 24,
-    (20,"S"): 26,
-    (20,"A") :3,
+    (0, 'A'): '3',
+    (0, 'P'): '1',
+    (0, 'S'): '2',
+    (4, 'M'): '6',
+    (6, 'B'): '8',
+    (6, 'C'): '9',
+    (6, 'D'): '10',
+    (6, 'G'): '12',
+    (7, 'E'): '14',
+    (7, 'F'): '16',
+    (7, 'T'): '15',
+    (11, 'G'): '22',
+    (17, 'E'): '28',
+    (17, 'F'): '16',
+    (17, 'T'): '15',
+    (19, 'M'): '29',
+    (20, 'M'): '30',
+    (21, 'M'): '31',
+    (24, 'F'): '16',
+    (24, 'T'): '33',
+    (25, 'F'): '16',
+    (25, 'T'): '34',
+    (26, 'F'): '35',
+    (27, 'F'): '36',
+    (29, 'A'): '3',
+    (29, 'S'): '38',
+    (30, 'C'): '39',
+    (30, 'D'): '10',
+    (30, 'G'): '12',
+    (31, 'D'): '40',
+    (31, 'G'): '12'
 }
 
-code = []
+keywords = ['while', 'do']
+operators = ['+', '-', '*', '/', '&&', '||', '!', 'relop', '$', '=']
+
+
+
 
 class StackItem:
     def __init__(self, name, place="-", quad=None):
@@ -153,153 +201,267 @@ class StackItem:
         self.true = []
         self.false = []
   
-def newtemp():
-    return f'T{next(temp_counter)}'
 
-def nextQuad():
-    return len(code)
 
-def backpatch(to_back_patch, quad):
-    for line_no in to_back_patch:
-        code[line_no] += str(quad)
+class TAC_generator:
 
-def gen(*args):
-    code.append(" ".join(args))
-
-def semantic_action(production_index, LHS, RHS):
-    match production_index:
-        case 1:
-            S = RHS.pop()
-            backpatch(S.next, nextQuad())
-
-        case 2:
-            return StackItem("S")
+    def __init__(self, input_string, productions, action_table, goto_table):
+        self.code = []
+        self.temp_counter = count()
+        self.productions = productions
+        self.action_table = action_table
+        self.goto_table = goto_table
+        self.input_tokens = input_string.split()
         
-        case 3:
-            RHS.pop()
-            M1 = RHS.pop()
-            E = RHS.pop()
-            RHS.pop()
-            M2 = RHS.pop()
-            S1 = RHS.pop()
+
+    def newtemp(self):
+        return f'T{next(self.temp_counter)}'
+
+    def nextQuad(self):
+        return len(self.code)
+
+    def backpatch(self, to_back_patch, quad):
+        for line_no in to_back_patch:
+            self.code[line_no] += " " +str(quad)
+
+    def gen(self, *args):
+        self.code.append(" ".join(args))
+
+    def semantic_action(self, production_index, LHS, RHS):
+        match production_index:
+            case 1:
+                S = RHS.pop()
+                self.backpatch(S.next, self.nextQuad())
+                return StackItem("P")
+
+            case 2:
+                return StackItem("S")
             
-            backpatch(E.true, M2.quad)
-            backpatch(S1.next, M1.quad)
-            S = StackItem("S")
-            S.next = E.false
-            gen("goto", str(M1.quad))
-            return S
-        case 4:
-            return StackItem("M",quad=nextQuad())
-        
-        case 5:
-            id = RHS.pop()
-            RHS.pop()
-            E = RHS.pop()
-            gen(id.place, "=", E.place)
-            return StackItem("A")
-        case 6:
-            E1 = RHS.pop()
-            RHS.pop()
-            T = RHS.pop()
-            E = StackItem(LHS, newtemp())
-            gen(E.place, "=", E1.place, "+", T.place)
-            return E
+            case 3:
+                RHS.pop()
+                M1 = RHS.pop()
+                B = RHS.pop()
+                RHS.pop()
+                M2 = RHS.pop()
+                S1 = RHS.pop()
 
-        case 7:
-            E1 = RHS.pop()
-            RHS.pop()
-            T = RHS.pop()
-            E = StackItem(LHS, newtemp())
-            gen(E.place, "=", E1.place, "-", T.place)
-            return E
-
-        case 8:
-            E = RHS.pop()
-            T = StackItem(LHS, E.place)
-            return T
-        
-        case 9:
-            T1 = RHS.pop()
-            RHS.pop()
-            F = RHS.pop()
-            T = StackItem(LHS, newtemp())
-            gen(T.place, "=", T1.place, "*", F.place)
-            return T
-
-        case 10:
-            T1 = RHS.pop()
-            RHS.pop()
-            F = RHS.pop()
-            T = StackItem(LHS, newtemp())
-            gen(T.place, "=", T1.place, "/", F.place)
-            return T
-        
-        case 11:
-            F = RHS.pop()
-            T = StackItem(LHS, F.place)
-            return T
-        
-        case 12:
-            E = RHS.pop()
-            F = StackItem(LHS, E.place)
-            return F
-        
-        case 13:
-            id = RHS.pop()
-            F = StackItem(LHS, id.place)
-            return F
+                self.backpatch(B.true, M2.quad)
+                self.backpatch(S1.next, M1.quad)
+                S = StackItem("S")
+                S.next = B.false
+                self.gen("goto", str(M1.quad))
+                return S
             
+            case 4:
+                return StackItem("M",quad=self.nextQuad())
             
-
-
-def parse_input_tokens(input_tokens):
-    stack = [0]
-    input_tokens.append('$')
-    i = 0
-    while True:
-        state = stack[-1]
-        token = input_tokens[i]
-
-        if token in ['a', 'b', 'c', 'd', 'e', 'x']:
-            action = action_table[(state, "id")]
-        else:
-            action = action_table[(state, token)]
-
-        if action[0] == 's':
-            if token in ['a', 'b', 'c', 'd', 'e', 'x']:
-                stack.append(StackItem("id", token))
-            else:
-                stack.append(StackItem(token))
-
-            stack.append(int(action[1:]))
-            i += 1
-        elif action[0] == 'r':
-            production_index = int(action[1:])
-            production = productions[production_index]
-            popped_items = []
-            for _ in range(len(production)-1):
-                stack.pop()
-                popped_items.append(stack.pop())
+            case 5:
+                id = RHS.pop()
+                RHS.pop()
+                E = RHS.pop()
+                self.gen(id.place, "=", E.place)
+                return StackItem("A")
             
-            state = stack[-1]
-            stack.append(semantic_action(production_index, production[0], popped_items))
-            stack.append(int(goto_table[(state, production[0])]))
+            case 6:
+                E1 = RHS.pop()
+                RHS.pop()
+                T = RHS.pop()
+                E = StackItem(LHS, self.newtemp())
+                self.gen(E.place, "=", E1.place, "+", T.place)
+                return E
 
-        elif action == 'acc':
-            return True
-        else:
+            case 7:
+                E1 = RHS.pop()
+                RHS.pop()
+                T = RHS.pop()
+                E = StackItem(LHS, self.newtemp())
+                self.gen(E.place, "=", E1.place, "-", T.place)
+                return E
+
+            case 8:
+                E = RHS.pop()
+                T = StackItem(LHS, E.place)
+                return T
+            
+            case 9:
+                T1 = RHS.pop()
+                RHS.pop()
+                F = RHS.pop()
+                T = StackItem(LHS, self.newtemp())
+                self.gen(T.place, "=", T1.place, "*", F.place)
+                return T
+
+            case 10:
+                T1 = RHS.pop()
+                RHS.pop()
+                F = RHS.pop()
+                T = StackItem(LHS, self.newtemp())
+                self.gen(T.place, "=", T1.place, "/", F.place)
+                return T
+            
+            case 11:
+                F = RHS.pop()
+                T = StackItem(LHS, F.place)
+                return T
+            
+            case 12:
+                E = RHS.pop()
+                F = StackItem(LHS, E.place)
+                return F
+            
+            case 13:
+                id = RHS.pop()
+                F = StackItem(LHS, id.place)
+                return F
+                
+            case 14:
+                B = RHS.pop()
+                RHS.pop()
+                M = RHS.pop()
+                C = RHS.pop()
+
+                self.backpatch(B.false, M.quad)
+                
+                B1 = StackItem("B")
+                B1.true = list(set(C.true + B.true))
+                B1.false = list(C.false)
+                return B1
+            
+            case 15:
+                C = RHS.pop()
+                
+                B = StackItem(LHS)
+                B.true = list(C.true)
+                B.false = list(C.false)
+                return B
+            
+            case 16:
+                C = RHS.pop()
+                RHS.pop()
+                M = RHS.pop()
+                D = RHS.pop()
+
+                self.backpatch(C.true, M.quad)
+                
+                C1 = StackItem("C")
+                C1.false = list(set(C.false + D.false))
+                C1.true = list(D.true)
+                return C1
+            
+            case 17:
+                D = RHS.pop()
+                
+                C = StackItem(LHS)
+                C.true = list(D.true)
+                C.false = list(D.false)
+                return C
+            
+            case 18:
+                RHS.pop()
+                G = RHS.pop()
+                
+                D = StackItem("D")
+                D.true = list(G.false)
+                D.false = list(G.true)
+                return D
+            
+            case 19:
+                G = RHS.pop()
+                
+                D = StackItem("D")
+                D.true = list(G.true)
+                D.false = list(G.false)
+                return D
+            
+            case 20:
+                id = RHS.pop()
+                
+                E = StackItem("E")
+                E.true = [self.nextQuad()]
+                E.false = [self.nextQuad()+1]
+
+                self.gen("if", id.place, "goto")
+                self.gen("goto")
+
+                return E
+            
+            case 21:
+                id1 = RHS.pop()
+                RHS.pop()
+                id2 = RHS.pop()
+
+                G = StackItem("G")
+                G.true = [self.nextQuad()]
+                G.false = [self.nextQuad()+1]
+
+                self.gen("if", id1.place, "relop", id2.place, "goto")
+                self.gen("goto")
+
+                return G
+
+
+    def generateTAC(self):
+        if self.parse_input_tokens():
+            i = 0
+            for line in self.code:
+                print(f"{i:>4}:  ", end="")
+                print(line)
+                i+=1
+            print(f"{i:>4}:  ")
+
+    def parse_input_tokens(self):
+        stack = [0]
+        self.input_tokens.append('$')
+
+        i = 0
+        try:
+            while True:
+                state = stack[-1]
+                token = self.input_tokens[i]
+
+                if token not in keywords + operators + ['$']:
+                    action = self.action_table[(state, "id")]
+                else:
+                    action = self.action_table[(state, token)]
+
+                if action[0] == 's':
+                    if token not in keywords + operators + ['$']:
+                        stack.append(StackItem("id", token))
+                    else:
+                        stack.append(StackItem(token))
+
+                    stack.append(int(action[1:]))
+                    i += 1
+
+                elif action[0] == 'r':
+                    production_index = int(action[1:])
+                    production = self.productions[production_index]
+                    popped_items = []
+                    for _ in range(len(production)-1):
+                        stack.pop()
+                        popped_items.append(stack.pop())
+                    
+                    state = stack[-1]
+                    stack.append(self.semantic_action(production_index, production[0], popped_items))
+                    stack.append(int(self.goto_table[(state, production[0])]))
+
+                elif action == 'acc':
+                    return True
+                
+                else:
+                    print("[ERROR] INVALID STREAM OF TOKENS")
+                    return False
+                
+        except:
+            print("[ERROR] INVALID STREAM OF TOKENS")
             return False
 
+
 # Input to be parsed
+input_string = "while a relop b && c relop b || b relop d && d relop e && g relop f do x = a + b * c * d - e / f"
 
-input_string = "while a do x = a + b * c * d"
-input_tokens = input_string.split()
+tac = TAC_generator(input_string, productions, action_table, goto_table)
+tac.generateTAC()
 
-print(parse_input_tokens(input_tokens))
 
-i = 0
-for line in code:
-    print(f"{i}: ", end="")
-    print(line)
-    i+=1
+
