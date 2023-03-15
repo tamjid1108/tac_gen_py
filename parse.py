@@ -5,7 +5,7 @@ productions = [
     ["P'", 'P'],
     ['P', 'S'],
     ['S', 'A'],
-    ['S', 'while', 'M', 'E', 'do', 'M', 'S'],
+    ['S', 'while', 'M', 'B', 'do', 'M', 'S'],
     ['M'],
     ['A', 'id', '=', 'E'],
     ['E', 'E', '+', 'T'],
@@ -246,7 +246,7 @@ class TAC_generator:
                 S1 = RHS.pop()
 
                 self.backpatch(B.true, M2.quad)
-                self.backpatch(S1.next, M1.quad)
+                self.backpatch(S1.next, self.nextQuad())
                 S = StackItem("S")
                 S.next = B.false
                 self.gen("goto", str(M1.quad))
@@ -458,7 +458,7 @@ class TAC_generator:
 
 
 # Input to be parsed
-input_string = "while a relop b && c relop b || b relop d && d relop e && g relop f do x = a + b * c * d - e / f"
+input_string = "while a relop b || c do while b relop a do b = b - a"
 
 tac = TAC_generator(input_string, productions, action_table, goto_table)
 tac.generateTAC()
