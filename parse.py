@@ -458,7 +458,7 @@ class TAC_generator:
 
 
 # Input to be parsed
-input_string = "while a relop b || c do while b relop a do b = b - a"
+input_string = "while i relop j || j relop k do while i relop k do while j do i = i + 1 * j"
 
 tac = TAC_generator(input_string, productions, action_table, goto_table)
 tac.generateTAC()
