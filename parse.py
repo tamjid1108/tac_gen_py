@@ -27,7 +27,7 @@ productions = [
 ]
 
 # Bottom-Up Parser Table
-action_table= {
+action_table = {
     (0, 'id'): 's5',
     (0, 'while'): 's4',
     (1, '$'): 'acc',
@@ -190,8 +190,6 @@ keywords = ['while', 'do']
 operators = ['+', '-', '*', '/', '&&', '||', '!', 'relop', '$', '=']
 
 
-
-
 class StackItem:
     def __init__(self, name, place="-", quad=None):
         self.name = name
@@ -200,7 +198,6 @@ class StackItem:
         self.next = []
         self.true = []
         self.false = []
-  
 
 
 class TAC_generator:
@@ -212,7 +209,6 @@ class TAC_generator:
         self.action_table = action_table
         self.goto_table = goto_table
         self.input_tokens = input_string.split()
-        
 
     def newtemp(self):
         return f'T{next(self.temp_counter)}'
@@ -222,7 +218,7 @@ class TAC_generator:
 
     def backpatch(self, to_back_patch, quad):
         for line_no in to_back_patch:
-            self.code[line_no] += " " +str(quad)
+            self.code[line_no] += " " + str(quad)
 
     def gen(self, *args):
         self.code.append(" ".join(args))
@@ -236,7 +232,7 @@ class TAC_generator:
 
             case 2:
                 return StackItem("S")
-            
+
             case 3:
                 RHS.pop()
                 M1 = RHS.pop()
@@ -251,17 +247,17 @@ class TAC_generator:
                 S.next = B.false
                 self.gen("goto", str(M1.quad))
                 return S
-            
+
             case 4:
-                return StackItem("M",quad=self.nextQuad())
-            
+                return StackItem("M", quad=self.nextQuad())
+
             case 5:
                 id = RHS.pop()
                 RHS.pop()
                 E = RHS.pop()
                 self.gen(id.place, "=", E.place)
                 return StackItem("A")
-            
+
             case 6:
                 E1 = RHS.pop()
                 RHS.pop()
@@ -282,7 +278,7 @@ class TAC_generator:
                 E = RHS.pop()
                 T = StackItem(LHS, E.place)
                 return T
-            
+
             case 9:
                 T1 = RHS.pop()
                 RHS.pop()
@@ -298,22 +294,22 @@ class TAC_generator:
                 T = StackItem(LHS, self.newtemp())
                 self.gen(T.place, "=", T1.place, "/", F.place)
                 return T
-            
+
             case 11:
                 F = RHS.pop()
                 T = StackItem(LHS, F.place)
                 return T
-            
+
             case 12:
                 E = RHS.pop()
                 F = StackItem(LHS, E.place)
                 return F
-            
+
             case 13:
                 id = RHS.pop()
                 F = StackItem(LHS, id.place)
                 return F
-                
+
             case 14:
                 B = RHS.pop()
                 RHS.pop()
@@ -321,20 +317,20 @@ class TAC_generator:
                 C = RHS.pop()
 
                 self.backpatch(B.false, M.quad)
-                
+
                 B1 = StackItem("B")
                 B1.true = list(set(C.true + B.true))
                 B1.false = list(C.false)
                 return B1
-            
+
             case 15:
                 C = RHS.pop()
-                
+
                 B = StackItem(LHS)
                 B.true = list(C.true)
                 B.false = list(C.false)
                 return B
-            
+
             case 16:
                 C = RHS.pop()
                 RHS.pop()
@@ -342,40 +338,40 @@ class TAC_generator:
                 D = RHS.pop()
 
                 self.backpatch(C.true, M.quad)
-                
+
                 C1 = StackItem("C")
                 C1.false = list(set(C.false + D.false))
                 C1.true = list(D.true)
                 return C1
-            
+
             case 17:
                 D = RHS.pop()
-                
+
                 C = StackItem(LHS)
                 C.true = list(D.true)
                 C.false = list(D.false)
                 return C
-            
+
             case 18:
                 RHS.pop()
                 G = RHS.pop()
-                
+
                 D = StackItem("D")
                 D.true = list(G.false)
                 D.false = list(G.true)
                 return D
-            
+
             case 19:
                 G = RHS.pop()
-                
+
                 D = StackItem("D")
                 D.true = list(G.true)
                 D.false = list(G.false)
                 return D
-            
+
             case 20:
                 id = RHS.pop()
-                
+
                 E = StackItem("E")
                 E.true = [self.nextQuad()]
                 E.false = [self.nextQuad()+1]
@@ -384,7 +380,7 @@ class TAC_generator:
                 self.gen("goto")
 
                 return E
-            
+
             case 21:
                 id1 = RHS.pop()
                 RHS.pop()
@@ -399,14 +395,13 @@ class TAC_generator:
 
                 return G
 
-
     def generateTAC(self):
         if self.parse_input_tokens():
             i = 0
             for line in self.code:
                 print(f"{i:>4}:  ", end="")
                 print(line)
-                i+=1
+                i += 1
             print(f"{i:>4}:  ")
 
     def parse_input_tokens(self):
@@ -440,28 +435,28 @@ class TAC_generator:
                     for _ in range(len(production)-1):
                         stack.pop()
                         popped_items.append(stack.pop())
-                    
+
                     state = stack[-1]
-                    stack.append(self.semantic_action(production_index, production[0], popped_items))
+                    stack.append(self.semantic_action(
+                        production_index, production[0], popped_items))
                     stack.append(int(self.goto_table[(state, production[0])]))
 
                 elif action == 'acc':
                     return True
-                
+
                 else:
                     print("[ERROR] INVALID STREAM OF TOKENS")
                     return False
-                
+
         except:
             print("[ERROR] INVALID STREAM OF TOKENS")
             return False
 
 
 # Input to be parsed
-input_string = "while i relop j || j relop k do while i relop k do while j do i = i + 1 * j"
+input_string = input("Enter your statement (tokens separated by spaces) : ")
+# input_string = "while i relop j || j relop k do while i relop k do  i = i + 2 * j"
 
 tac = TAC_generator(input_string, productions, action_table, goto_table)
+print("THREE ADDRESS CODE")
 tac.generateTAC()
-
-
-
